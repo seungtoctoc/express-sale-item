@@ -6,13 +6,13 @@ const Product = require('../models/product');
 const types = ['FOOTWEAR', 'APPAREL'];
 const brands = ['NIKE', 'ADIDAS', 'NEWBALANCE'];
 
-router.get('/products', async function (req, res, next) {
+router.post('/products', async function (req, res, next) {
   try {
     const selectedTypes = req.body.type;
     const selectedBrands = req.body.brand;
     const selectedSortby = req.body.sortby;
 
-    let filterdProducts = await Product.find({});
+    let filterdProducts = await Product.find({ depth: 0 });
 
     if (selectedTypes) {
       filterdProducts = filterdProducts.filter((product) =>
@@ -25,7 +25,7 @@ router.get('/products', async function (req, res, next) {
       );
     }
 
-    if (filterdProducts.length == 0) {
+    if (filterdProducts.size == 0) {
       res.status(204).send();
     }
 
