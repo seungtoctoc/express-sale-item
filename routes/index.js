@@ -3,13 +3,13 @@ var router = express.Router();
 
 const Product = require('../models/product');
 
-const types = ['FOOTWEAR', 'APPAREL'];
 const brands = ['NIKE', 'ADIDAS', 'NEWBALANCE'];
+const types = ['FOOTWEAR', 'APPAREL'];
 
 router.post('/products', async function (req, res, next) {
   try {
-    const selectedTypes = req.body.type;
     const selectedBrands = req.body.brand;
+    const selectedTypes = req.body.type;
     const selectedSortby = req.body.sortby;
 
     let filterdProducts = await Product.find({ depth: 0 });
