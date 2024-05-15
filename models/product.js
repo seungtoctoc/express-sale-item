@@ -2,13 +2,10 @@ const mongoose = require('mongoose');
 
 const ProductSchema = new mongoose.Schema(
   {
-    depth: {
-      type: Number,
-    },
-    type: {
+    brand: {
       type: String,
     },
-    brand: {
+    type: {
       type: String,
     },
     title: {
@@ -37,12 +34,6 @@ const ProductSchema = new mongoose.Schema(
     color: {
       type: String,
     },
-    colorways: [
-      {
-        type: mongoose.Types.ObjectId,
-        ref: 'Product',
-      },
-    ],
   },
   { timestamps: true }
 );
