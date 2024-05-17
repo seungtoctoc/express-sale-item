@@ -12,33 +12,38 @@ router.post('/products', async function (req, res, next) {
     const searchWord = req.body.searchWord;
     const selectedBrands = req.body.brand;
     const selectedTypes = req.body.type;
-    const selectedSortby = req.body.sortby;
 
+    const sortby = req.body.sortby;
     const limit = req.body.limit;
     const current = req.body.current;
 
     // get sorted products
-    let products = await SortedProducts.find({
-      sortedBy: selectedSortby,
+    const sortedProducts = await SortedProducts.findOne({
+      sortby: sortby,
     }).populate('products');
 
     // filter
-    products = filterProducts(
-      products,
+    let filterdProducts = await filterProducts(
+      sortedProducts.products,
       searchWord,
       selectedTypes,
       selectedBrands
     );
 
+    console.log('after filter size: ', sortedProducts.products.length);
+
     // validate
-    if (products.size == 0) {
+    if (filterdProducts.size == 0) {
       res.status(204).send();
     }
 
     // slice
-    products = products.slice(limit * current, limit * (current + 1));
+    filterdProducts = filterdProducts.slice(
+      limit * current,
+      limit * (current + 1)
+    );
 
-    res.status(200).send(products);
+    res.status(200).send(filterdProducts);
   } catch (err) {
     res.send(err);
   }
@@ -57,25 +62,30 @@ const filterProducts = (
   selectedTypes,
   selectedBrands
 ) => {
+  let filteredProducts = products;
+
   if (searchWord) {
-    products = products.filter(
+    console.log('searchWord: ', searchWord);
+    filteredProducts = filteredProducts.filter(
       (product) =>
         product.title.includes(searchWord) ||
         product.subtitle.includes(searchWord)
     );
   }
+
   if (selectedTypes) {
-    products = products.filter((product) =>
+    filteredProducts = filteredProducts.filter((product) =>
       selectedTypes.includes(product.type)
     );
   }
+
   if (selectedBrands) {
-    products = products.filter((product) =>
+    filteredProducts = filteredProducts.filter((product) =>
       selectedBrands.includes(product.brand)
     );
   }
 
-  return products;
+  return filteredProducts;
 };
 
 module.exports = router;
