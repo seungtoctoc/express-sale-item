@@ -1,7 +1,8 @@
 var express = require('express');
 var router = express.Router();
 
-const Product = require('../models/product');
+const Product = require('../models/Product');
+const SortedProducts = require('../models/sortedProducts');
 
 const brands = ['NIKE', 'ADIDAS', 'NEWBALANCE'];
 const types = ['FOOTWEAR', 'APPAREL'];
@@ -16,7 +17,10 @@ router.post('/products', async function (req, res, next) {
     const limit = req.body.limit;
     const current = req.body.current;
 
-    let products = await Product.find({});
+    // get sorted products
+    let products = await SortedProducts.find({
+      sortedBy: selectedSortby,
+    }).populate('products');
 
     // filter
     products = filterProducts(
@@ -30,7 +34,6 @@ router.post('/products', async function (req, res, next) {
     if (products.size == 0) {
       res.status(204).send();
     }
-    // sort
 
     // slice
     products = products.slice(limit * current, limit * (current + 1));
@@ -39,6 +42,13 @@ router.post('/products', async function (req, res, next) {
   } catch (err) {
     res.send(err);
   }
+});
+
+// test
+router.get('/products/all', async function (req, res, next) {
+  const products = await Product.find({});
+
+  res.send(products);
 });
 
 const filterProducts = (
