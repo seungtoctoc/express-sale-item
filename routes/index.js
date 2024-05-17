@@ -22,20 +22,17 @@ router.post('/products', async function (req, res, next) {
       sortby: sortby,
     }).populate('products');
 
+    console.log('prev length ', sortedProducts.products.length);
+
     // filter
-    let filterdProducts = await filterProducts(
+    let filterdProducts = filterProducts(
       sortedProducts.products,
       searchWord,
       selectedTypes,
       selectedBrands
     );
 
-    console.log('after filter size: ', sortedProducts.products.length);
-
-    // validate
-    if (filterdProducts.size == 0) {
-      res.status(204).send();
-    }
+    console.log('after filter size: ', filterdProducts.length);
 
     // slice
     filterdProducts = filterdProducts.slice(
@@ -65,7 +62,6 @@ const filterProducts = (
   let filteredProducts = products;
 
   if (searchWord) {
-    console.log('searchWord: ', searchWord);
     filteredProducts = filteredProducts.filter(
       (product) =>
         product.title.includes(searchWord) ||
@@ -73,13 +69,13 @@ const filterProducts = (
     );
   }
 
-  if (selectedTypes) {
+  if (selectedTypes.length > 0) {
     filteredProducts = filteredProducts.filter((product) =>
       selectedTypes.includes(product.type)
     );
   }
 
-  if (selectedBrands) {
+  if (selectedBrands.length > 0) {
     filteredProducts = filteredProducts.filter((product) =>
       selectedBrands.includes(product.brand)
     );
