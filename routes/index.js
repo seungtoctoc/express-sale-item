@@ -22,8 +22,6 @@ router.post('/products', async function (req, res, next) {
       sortby: sortby,
     }).populate('products');
 
-    console.log('prev length ', sortedProducts.products.length);
-
     // filter
     let filterdProducts = filterProducts(
       sortedProducts.products,
@@ -32,7 +30,7 @@ router.post('/products', async function (req, res, next) {
       selectedBrands
     );
 
-    console.log('after filter size: ', filterdProducts.length);
+    const totalCount = filterdProducts.length;
 
     // slice
     filterdProducts = filterdProducts.slice(
@@ -40,17 +38,15 @@ router.post('/products', async function (req, res, next) {
       limit * (current + 1)
     );
 
-    res.status(200).send(filterdProducts);
+    const response = {
+      totalCount: totalCount,
+      products: filterdProducts,
+    };
+
+    res.status(200).send(response);
   } catch (err) {
     res.send(err);
   }
-});
-
-// test
-router.get('/products/all', async function (req, res, next) {
-  const products = await Product.find({});
-
-  res.send(products);
 });
 
 const filterProducts = (
